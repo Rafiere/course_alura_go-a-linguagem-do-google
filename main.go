@@ -7,7 +7,9 @@ import (
 	"net/http"
 	"os"
 	"reflect"
+	"strconv"
 	"strings"
+	"time"
 )
 
 func main() {
@@ -42,6 +44,16 @@ func main() {
 
 }
 
+func registraLog(status bool, site string) {
+	arquivo, error := os.OpenFile("log.txt", os.O_RDWR|os.O_CREATE|os.O_APPEND, 0666)
+	if error != nil {
+		fmt.Println(error)
+	}
+	fmt.Println("Arquivo: ", arquivo)
+	arquivo.WriteString(time.Now().Format(time.RFC3339) + " - " + site + " - online: " + strconv.FormatBool(status) + "\n")
+	arquivo.Close()
+}
+
 func iniciarMonitoramento() {
 	fmt.Println("Monitorando...")
 
@@ -69,6 +81,7 @@ func lerSitesDoArquivo() []string {
 		linha, err := leitor.ReadString('\n')
 		linha = strings.TrimSpace(linha)
 		fmt.Println(linha)
+		sites = append(sites, linha)
 		if err == io.EOF {
 			break
 		}
@@ -83,8 +96,10 @@ func testSite(site string) {
 
 	if resp.StatusCode == 200 {
 		fmt.Println("O site", site, "foi carregado com sucesso!")
+		registraLog(true, site)
 	} else {
 		fmt.Println("O site", site, "está com problemas. Status code:", resp.StatusCode)
+		registraLog(false, site)
 	}
 }
 
