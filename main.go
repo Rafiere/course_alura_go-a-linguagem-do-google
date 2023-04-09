@@ -1,10 +1,13 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"net/http"
 	"os"
 	"reflect"
+	"strings"
 )
 
 func main() {
@@ -42,15 +45,37 @@ func main() {
 func iniciarMonitoramento() {
 	fmt.Println("Monitorando...")
 
-	sites := []string{
-		"https://alura.com.br",
-		"https://google.com.br",
-	}
+	sites := lerSitesDoArquivo()
 
 	for _, site := range sites {
 		testSite(site)
 	}
 
+}
+
+func lerSitesDoArquivo() []string {
+
+	var sites []string
+
+	file, err := os.Open("sites.txt")
+	if err != nil {
+		fmt.Println("Ocorreu um erro: ", err)
+	}
+
+	leitor := bufio.NewReader(file)
+
+	for {
+		/* Retirando os espaços em branco do final do arquivo. */
+		linha, err := leitor.ReadString('\n')
+		linha = strings.TrimSpace(linha)
+		fmt.Println(linha)
+		if err == io.EOF {
+			break
+		}
+	}
+
+	file.Close()
+	return sites
 }
 
 func testSite(site string) {
