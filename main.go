@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"net/http"
 	"os"
 	"reflect"
 )
@@ -10,26 +11,54 @@ func main() {
 
 	testeTipagem()
 
-	exibirMenu()
+	/* Estamos criando um "while". */
+	for {
+		exibirMenu()
 
-	var comando int
+		var comando int
 
-	lerComando(&comando)
+		lerComando(&comando)
 
-	fmt.Println("O comando escolhido foi:", comando)
-	fmt.Println("O endereço de memória da minha variável é:", &comando)
+		fmt.Println("O comando escolhido foi:", comando)
+		fmt.Println("O endereço de memória da minha variável é:", &comando)
 
-	fmt.Println("\n\n")
+		fmt.Println("\n\n")
 
-	if comando == 1 {
-		fmt.Println("Monitorando...")
-	} else if comando == 2 {
-		fmt.Println("Exibindo logs...")
-	} else if comando == 3 {
-		fmt.Println("Saindo do programa...")
+		if comando == 1 {
+			iniciarMonitoramento()
+		} else if comando == 2 {
+			fmt.Println("Exibindo logs...")
+		} else if comando == 3 {
+			fmt.Println("Saindo do programa...")
+			os.Exit(0)
+		} else {
+			fmt.Println("Eu não conheço esse comando!")
+			os.Exit(-1)
+		}
+	}
+
+}
+
+func iniciarMonitoramento() {
+	fmt.Println("Monitorando...")
+
+	sites := []string{
+		"https://alura.com.br",
+		"https://google.com.br",
+	}
+
+	for pos, site := range sites {
+		fmt.Println(pos, "-", site)
+	}
+
+	site := "https://alura.com.br"
+
+	resp, _ := http.Get(site)
+
+	if resp.StatusCode == 200 {
+		fmt.Println("O site", site, "foi carregado com sucesso!")
 	} else {
-		fmt.Println("Eu não conheço esse comando!")
-		os.Exit(-1)
+		fmt.Println("O site", site, "está com problemas. Status code:", resp.StatusCode)
 	}
 }
 
