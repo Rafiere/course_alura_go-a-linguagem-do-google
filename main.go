@@ -47,12 +47,13 @@ func iniciarMonitoramento() {
 		"https://google.com.br",
 	}
 
-	for pos, site := range sites {
-		fmt.Println(pos, "-", site)
+	for _, site := range sites {
+		testSite(site)
 	}
 
-	site := "https://alura.com.br"
+}
 
+func testSite(site string) {
 	resp, _ := http.Get(site)
 
 	if resp.StatusCode == 200 {
